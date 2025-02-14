@@ -29,25 +29,58 @@
         </div>
           
 
-        <div class="container text-center mt-3" style="padding-top:100px;">
-          <div class="row">
-              <div class="col-4 border p-3">
-                  <h5>Source</h5>
-                  <p>Source</p>
+         <!--main function area-->
+    <div class="container text-center mt-3" style="padding-top:100px;">
+      <div class="row">
+          <!--Document upload area-->
+          <div class="col-4 border p-3">
+              <h5>Sources:</h5>
+              
+              <div class="mb-3">
+                  <label for="formFileMultiple" class="form-label">Include Document/s:</label>
+                  <input class="form-control" type="file" id="formFileMultiple" multiple onchange="updateFileList()">
               </div>
-              <div class="col-8 border p-3">
-                  <textarea id="prompt" class="form-control" placeholder="Enter your prompt..."></textarea>
-                  <button class="btn btn-primary mt-2" onclick="getResponse()">Send</button>
-                  <div class="mt-3 p-3 border rounded bg-light" id="response"></div>
-              </div>
+              
+              <!-- File List Display -->
+              <ul id="fileList" class="list-group"  style="padding-bottom: 40px;"></ul>
+
+              <button type="button" class="btn btn-primary">Upload Documents</button>
+
+          
           </div>
-      </div>
+
+          <!--Prompt Area-->
+          <div class="col-8 border p-3">
+              <textarea id="prompt" class="form-control" placeholder="Enter your prompt..."></textarea>
+              <button class="btn btn-primary mt-2" onclick="getResponse()">Send</button>
+              <div class="mt-3 p-3 border rounded bg-light" id="response"></div>
+          </div>
+
+
+        </div>
+    </div>
+
   
       <script>
           function getResponse() {
               const responseDiv = document.getElementById("response");
               responseDiv.innerHTML = "This is a fixed response to every request.";
           }
+
+          
+        function updateFileList() {
+            const fileInput = document.getElementById("formFileMultiple");
+            const fileList = document.getElementById("fileList");
+            fileList.innerHTML = ""; // Clear previous list
+
+            // Iterate over selected files and add to list
+            for (let file of fileInput.files) {
+                let listItem = document.createElement("li");
+                listItem.className = "list-group-item";
+                listItem.textContent = file.name;
+                fileList.appendChild(listItem);
+            }
+        }
       </script>
     </body>
 </html>
