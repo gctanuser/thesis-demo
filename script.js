@@ -21,7 +21,8 @@ async function sendData(inputValue) {
 
 async function getResponse() {
     const responseDiv = document.getElementById("response");
-    let x = await sendData(1)
+    const promptdata = document.getElementById("prompt").value;
+    let x = await sendData(promptdata);
     responseDiv.innerHTML = x.response;
 }
 
