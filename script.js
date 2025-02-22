@@ -26,14 +26,13 @@ function getURL() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const url_display = document.getElementById("url_link");
-    const url_data = sessionStorage.getItem("url_link");
+    let url_data = sessionStorage.getItem("url_link");
 
     if(url_data){
-        console.log(url_data);
+        document.getElementById("url_string").textContent = url_data;
     }
     else{
-        console.log("No Data");
+        document.getElementById("url_string").textContent = "no data";
     }
     
 });
