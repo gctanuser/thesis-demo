@@ -1,6 +1,28 @@
-function getResponse() {
+let serverURL = sessionStorage.getItem("url_link");
+
+
+async function sendData(inputValue) {
+    try {
+        const response = await fetch(serverURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ input: inputValue }),
+        });
+        return await response.json(); // Return parsed JSON response
+    } catch (error) {
+        console.error("Error:", error);
+        return { response: "Error occurred" };
+    }
+}
+
+
+
+async function getResponse() {
     const responseDiv = document.getElementById("response");
-    responseDiv.innerHTML = "This is a fixed response to every request.";
+    let x = await sendData(1)
+    responseDiv.innerHTML = x.response;
 }
 
 function updateFileList() {
