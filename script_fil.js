@@ -45,10 +45,15 @@ async function getResponse() {
     const responseDiv = document.getElementById("response");
     const promptdata = document.getElementById("prompt").value;
 
-    let x = await sendData(promptdata);
-    responseDiv.innerHTML = x.response;
-
+    responseDiv.innerHTML = "Processing request...";
     
+    try{
+        let x = await sendData(promptdata);
+        responseDiv.innerHTML = x.response;
+    } catch(error){
+        responseDiv.innerHTML = "Error";
+    }
+        
 }
 
 
