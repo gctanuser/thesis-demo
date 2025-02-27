@@ -7,14 +7,14 @@ async function sendData(inputValue) {
     gpt_use = document.getElementById('gpt_check').checked;
     enriched_use = document.getElementById('enriched_model_check').checked;
 
-    let model_choice = 0;
+    let model_choice = "gpt";
 
     if(gpt_use){
-        model_choice = 1;
+        model_choice = "gpt";
         console.log('gpt selected');
     }else if(enriched_use){
         console.log('enriched used');
-        model_choice = 2;
+        model_choice = "enriched";
     }
 
     choice_a = "A.)"+document.getElementById('choice_a').value;
@@ -32,7 +32,7 @@ async function sendData(inputValue) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ input: inputValue, choices: choice_str}),
+            body: JSON.stringify({ input: inputValue, choices: choice_str, model: model_choice}),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {

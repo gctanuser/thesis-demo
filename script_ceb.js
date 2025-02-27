@@ -6,20 +6,32 @@ async function sendData(inputValue) {
     gpt_use = document.getElementById('gpt_check').checked;
     enriched_use = document.getElementById('enriched_model_check').checked;
 
+    let model_choice = "gpt";
+
     if(gpt_use){
+        model_choice = "gpt";
         console.log('gpt selected');
     }else if(enriched_use){
         console.log('enriched used');
+        model_choice = "enriched";
     }
 
+    choice_a = "A.)"+document.getElementById('choice_a').value;
+    choice_b = "B.)"+document.getElementById('choice_b').value;
+    choice_c = "C.)"+document.getElementById('choice_c').value;
+    choice_d = "D.)"+document.getElementById('choice_d').value;
     
+    choice_str = choice_a +", "+choice_a+", "+choice_b+", "+choice_c+", "+choice_d;
+
+    console.log("model choice is "+ model_choice)
+
     try {
         const response = await fetch(final_serverURL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ input: inputValue }),
+            body: JSON.stringify({ input: inputValue, choices: choice_str, model: model_choice }),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {
