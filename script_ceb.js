@@ -2,6 +2,17 @@ let serverURL = sessionStorage.getItem("url_link2");
 
 async function sendData(inputValue) {
     let final_serverURL = serverURL + "process"
+
+    gpt_use = document.getElementById('gpt_check').checked;
+    enriched_use = document.getElementById('enriched_model_check').checked;
+
+    if(gpt_use){
+        console.log('gpt selected');
+    }else if(enriched_use){
+        console.log('enriched used');
+    }
+
+    
     try {
         const response = await fetch(final_serverURL, {
             method: "POST",
