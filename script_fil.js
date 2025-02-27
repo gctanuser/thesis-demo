@@ -1,9 +1,20 @@
 let serverURL = sessionStorage.getItem("url_link");
 
-
 async function sendData(inputValue) {
+    let serverURL_final = serverURL + "process";
+    console.log("Sent Data to:"+ serverURL_final)
+
+    gpt_use = document.getElementById('gpt_check').checked;
+    enriched_use = document.getElementById('enriched_model_check').checked;
+
+    if(gpt_use){
+        console.log('gpt selected');
+    }else if(enriched_use){
+        console.log('enriched used');
+    }
+    
     try {
-        const response = await fetch(serverURL, {
+        const response = await fetch(serverURL_final, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -17,14 +28,16 @@ async function sendData(inputValue) {
     }
 }
 
-
-
 async function getResponse() {
     const responseDiv = document.getElementById("response");
     const promptdata = document.getElementById("prompt").value;
+
     let x = await sendData(promptdata);
     responseDiv.innerHTML = x.response;
+
+    
 }
+
 
 function updateFileList() {
     const fileInput = document.getElementById("formFileMultiple");
@@ -58,4 +71,5 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("url_string").textContent = "no data";
     }
     
+    console.log(url_data);
 });
