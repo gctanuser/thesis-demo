@@ -3,9 +3,9 @@
     <head>
         <title>Thesis Demo</title>
 
-
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="./css/bootstrap.min.css" rel="stylesheet">
+        <script src="./js/bootstrap.bundle.min.js"></script>
+        
         <style>
            #word-container {
             margin-top: 20px;
@@ -14,7 +14,7 @@
                 margin: 5px;
                 padding: 10px;
                 border: none;
-                background-color: #3498db;
+                background-color: #24c524;
                 color: white;
                 cursor: pointer;
                 border-radius: 5px;
@@ -95,7 +95,7 @@
                   <label><input type="radio" name="mode" value="sentences"> Sentences</label>
               </div>
               
-              <button onclick="generateButtons()">Generate</button>
+              <button  class="btn btn-primary mt-2" onclick="generateButtons()">Generate</button>
               
               <div id="word-container"></div>
               <p>Active Selections: <span id="activeWords"></span></p>

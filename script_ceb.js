@@ -56,21 +56,6 @@ async function getResponse() {
     
 }
 
-
-function updateFileList() {
-    const fileInput = document.getElementById("formFileMultiple");
-    const fileList = document.getElementById("fileList");
-    fileList.innerHTML = ""; // Clear previous list
-
-    // Iterate over selected files and add to list
-    for (let file of fileInput.files) {
-        let listItem = document.createElement("li");
-        listItem.className = "list-group-item";
-        listItem.textContent = file.name;
-        fileList.appendChild(listItem);
-    }
-}
-
 function getURL() {
     const urlstr = document.getElementById("inputURL").value;
     
@@ -92,3 +77,91 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log(url_data);
     
 });
+
+
+// code for the generation stuff (keyword highlighting and item uploading)
+
+//<!--Code for the uploading of text file-->
+const fileInput = document.getElementById('fileInput');
+const fileContentsDiv = document.getElementById('fileContents');
+const inputPrompt = document.getElementById('inputString');
+
+fileInput.addEventListener('change', handleFileSelect, false);
+
+function handleFileSelect(event) {
+const file = event.target.files[0]; // Get the selected file
+
+if (file) {
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+    const contents = event.target.result; // Get the file contents
+   
+    // processing contents
+    let x = processText(contents);
+
+    inputPrompt.value = x.join(" ");
+
+    };
+
+    reader.onerror = function(event){
+    fileContentsDiv.textContent = "Error reading file";
+    }
+
+    reader.readAsText(file); 
+}
+}
+
+function processText(text){
+    console.log(text);
+    let lines = text.split('\n');
+
+    return lines;
+}
+
+
+// code for the word - sentence chunk
+let activeButtons = new Set();
+
+function generateButtons() {
+    const input = document.getElementById("inputString").value;
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    let elements;
+
+    if (mode === "words") {
+        elements = input.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0);
+    } else {
+        elements = input.split(/\.|,|;|!|\?/).map(s => s.trim()).filter(s => s.length > 0);
+    }
+
+    const container = document.getElementById("word-container");
+    container.innerHTML = ""; 
+    activeButtons.clear();
+    updateActiveWords();
+    
+    elements.forEach((element, index) => {
+        if (element.trim() !== "") {
+            const button = document.createElement("button");
+            button.innerText = element;
+            button.className = "word-button";
+            button.id = `word-button-${index}`;
+            button.onclick = () => toggleActive(button, element);
+            container.appendChild(button);
+        }
+    });
+}
+
+function toggleActive(button, element) {
+    if (button.classList.contains("active")) {
+        button.classList.remove("active");
+        activeButtons.delete(element);
+    } else {
+        button.classList.add("active");
+        activeButtons.add(element);
+    }
+    updateActiveWords();
+}
+
+function updateActiveWords() {
+    document.getElementById("activeWords").innerText = Array.from(activeButtons).join(", ");
+}
