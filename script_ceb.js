@@ -1,6 +1,7 @@
 let serverURL = sessionStorage.getItem("url_link2");
 
-async function sendData(inputValue) {
+// question answering functions
+async function sendData(inputValue,purpose) {
     let final_serverURL = serverURL + "process"
 
     gpt_use = document.getElementById('gpt_check').checked;
@@ -31,7 +32,7 @@ async function sendData(inputValue) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ input: inputValue, choices: choice_str, model: model_choice }),
+            body: JSON.stringify({ task:purpose, input: inputValue, choices: choice_str, model: model_choice }),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {
@@ -46,14 +47,66 @@ async function getResponse() {
     const promptdata = document.getElementById("prompt").value;
 
     responseDiv.innerHTML = "Processing request...";
-    
+    let purpose = "answering";
     try{
-        let x = await sendData(promptdata);
+        let x = await sendData(promptdata,purpose);
         responseDiv.innerHTML = x.response;
     } catch(error){
         responseDiv.innerHTML = "Error";
     }
     
+}
+
+
+// question generation functions
+
+async function sendStory(inputValue,purpose) {
+    let serverURL_final = serverURL + "process";
+    console.log("Sent Data to:"+ serverURL_final)
+
+    gpt_use = document.getElementById('gpt_check').checked;
+    enriched_use = document.getElementById('enriched_model_check').checked;
+
+    let model_choice = "gpt";
+
+    if(gpt_use){
+        model_choice = "gpt";
+        console.log('gpt selected');
+    }else if(enriched_use){
+        console.log('enriched used');
+        model_choice = "enriched";
+    }
+
+    try {
+        const response = await fetch(serverURL_final, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ task:purpose, input: inputValue, choices: choice_str, model: model_choice}),
+        });
+        return await response.json(); // Return parsed JSON response
+    } catch (error) {
+        console.error("Error:", error);
+        return { response: "Error occurred" };
+    }
+}
+
+async function createQuestions(){
+    const responseDiv = document.getElementById("response");
+    const promptdata = document.getElementById("prompt").value;
+
+    responseDiv.innerHTML = "Processing request...";
+    
+    let purpose = "generation";
+    try{
+
+        let x = await sendStory(promptdata,purpose);
+        responseDiv.innerHTML = x.response;
+
+    } catch(error){
+        responseDiv.innerHTML = "Error";
+    }
 }
 
 function getURL() {
