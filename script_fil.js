@@ -177,15 +177,20 @@ document.addEventListener("DOMContentLoaded", function() {
  // code for the word - sentence chunk
 let activeButtons = new Set();
 
+function removeSpecificCharacters(str) {
+    return str.replace(/[,.!?]/g, '');
+  }
+
  function generateButtons() {
      const input = document.getElementById("inputString").value;
      const mode = document.querySelector('input[name="mode"]:checked').value;
      let elements;
+    let cleaned_input = removeSpecificCharacters(input);
 
      if (mode === "words") {
-         elements = input.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0);
+         elements = cleaned_input.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0);
      } else {
-         elements = input.split(/\.|,|;|!|\?/).map(s => s.trim()).filter(s => s.length > 0);
+         elements = cleaned_input.split(/\.|,|;|!|\?/).map(s => s.trim()).filter(s => s.length > 0);
      }
 
      const container = document.getElementById("word-container");
