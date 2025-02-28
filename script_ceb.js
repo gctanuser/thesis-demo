@@ -2,7 +2,8 @@ let serverURL = sessionStorage.getItem("url_link2");
 
 // question answering functions
 async function sendData(inputValue,purpose) {
-    let final_serverURL = serverURL + "process"
+    let serverURL_final = serverURL + "process";
+    console.log("Sent Data to:"+ serverURL_final)
 
     gpt_use = document.getElementById('gpt_check').checked;
     enriched_use = document.getElementById('enriched_model_check').checked;
@@ -27,12 +28,12 @@ async function sendData(inputValue,purpose) {
     console.log("model choice is "+ model_choice)
 
     try {
-        const response = await fetch(final_serverURL, {
+        const response = await fetch(serverURL_final, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ task:purpose, input: inputValue, choices: choice_str, model: model_choice }),
+            body: JSON.stringify({ task:purpose,input: inputValue, choices: choice_str, model: model_choice}),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {
@@ -42,25 +43,24 @@ async function sendData(inputValue,purpose) {
 }
 
 async function getResponse() {
-
     const responseDiv = document.getElementById("response");
     const promptdata = document.getElementById("prompt").value;
 
     responseDiv.innerHTML = "Processing request...";
     let purpose = "answering";
+
     try{
         let x = await sendData(promptdata,purpose);
         responseDiv.innerHTML = x.response;
     } catch(error){
         responseDiv.innerHTML = "Error";
     }
-    
+        
 }
-
 
 // question generation functions
 
-async function sendStory(inputValue,purpose) {
+async function sendStory(prompt,context,purpose) {
     let serverURL_final = serverURL + "process";
     console.log("Sent Data to:"+ serverURL_final)
 
@@ -83,7 +83,7 @@ async function sendStory(inputValue,purpose) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ task:purpose, input: inputValue, choices: choice_str, model: model_choice}),
+            body: JSON.stringify({ task:purpose, input: prompt, context_clue: context, model: model_choice}),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {
@@ -94,14 +94,15 @@ async function sendStory(inputValue,purpose) {
 
 async function createQuestions(){
     const responseDiv = document.getElementById("response");
-    const promptdata = document.getElementById("prompt").value;
+    const contextData = document.getElementById("prompt").value;
+    const promptdata = document.getElementById('inputString').value;
 
     responseDiv.innerHTML = "Processing request...";
-    
+    console.log(promptdata);
     let purpose = "generation";
     try{
 
-        let x = await sendStory(promptdata,purpose);
+        let x = await sendStory(promptdata,contextData,purpose);
         responseDiv.innerHTML = x.response;
 
     } catch(error){
@@ -109,6 +110,7 @@ async function createQuestions(){
     }
 }
 
+// other fluff
 function getURL() {
     const urlstr = document.getElementById("inputURL").value;
     
@@ -126,95 +128,95 @@ document.addEventListener("DOMContentLoaded", function() {
     else{
         document.getElementById("url_string").textContent = "no data";
     }
-
-    console.log(url_data);
     
+    console.log(url_data);
 });
 
 
 // code for the generation stuff (keyword highlighting and item uploading)
 
 //<!--Code for the uploading of text file-->
-const fileInput = document.getElementById('fileInput');
-const fileContentsDiv = document.getElementById('fileContents');
-const inputPrompt = document.getElementById('inputString');
+ const fileInput = document.getElementById('fileInput');
+ const fileContentsDiv = document.getElementById('fileContents');
+ const inputPrompt = document.getElementById('inputString');
 
-fileInput.addEventListener('change', handleFileSelect, false);
+ fileInput.addEventListener('change', handleFileSelect, false);
 
-function handleFileSelect(event) {
-const file = event.target.files[0]; // Get the selected file
+ function handleFileSelect(event) {
+ const file = event.target.files[0]; // Get the selected file
 
-if (file) {
-    const reader = new FileReader();
+ if (file) {
+     const reader = new FileReader();
 
-    reader.onload = function(event) {
-    const contents = event.target.result; // Get the file contents
-   
-    // processing contents
-    let x = processText(contents);
+     reader.onload = function(event) {
+     const contents = event.target.result; // Get the file contents
+    
+     // processing contents
+     let x = processText(contents);
 
-    inputPrompt.value = x.join(" ");
+     inputPrompt.value = x.join(" ");
 
-    };
+     };
 
-    reader.onerror = function(event){
-    fileContentsDiv.textContent = "Error reading file";
-    }
+     reader.onerror = function(event){
+     fileContentsDiv.textContent = "Error reading file";
+     }
 
-    reader.readAsText(file); 
-}
-}
+     reader.readAsText(file); 
+ }
+ }
 
-function processText(text){
-    console.log(text);
-    let lines = text.split('\n');
+ function processText(text){
+     console.log(text);
+     let lines = text.split('\n');
 
-    return lines;
-}
+     return lines;
+ }
+ 
 
-
-// code for the word - sentence chunk
+ // code for the word - sentence chunk
 let activeButtons = new Set();
 
-function generateButtons() {
-    const input = document.getElementById("inputString").value;
-    const mode = document.querySelector('input[name="mode"]:checked').value;
-    let elements;
+ function generateButtons() {
+     const input = document.getElementById("inputString").value;
+     const mode = document.querySelector('input[name="mode"]:checked').value;
+     let elements;
 
-    if (mode === "words") {
-        elements = input.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0);
-    } else {
-        elements = input.split(/\.|,|;|!|\?/).map(s => s.trim()).filter(s => s.length > 0);
-    }
+     if (mode === "words") {
+         elements = input.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0);
+     } else {
+         elements = input.split(/\.|,|;|!|\?/).map(s => s.trim()).filter(s => s.length > 0);
+     }
 
-    const container = document.getElementById("word-container");
-    container.innerHTML = ""; 
-    activeButtons.clear();
-    updateActiveWords();
-    
-    elements.forEach((element, index) => {
-        if (element.trim() !== "") {
-            const button = document.createElement("button");
-            button.innerText = element;
-            button.className = "word-button";
-            button.id = `word-button-${index}`;
-            button.onclick = () => toggleActive(button, element);
-            container.appendChild(button);
-        }
-    });
-}
+     const container = document.getElementById("word-container");
+     container.innerHTML = ""; 
+     activeButtons.clear();
+     updateActiveWords();
+     
+     elements.forEach((element, index) => {
+         if (element.trim() !== "") {
+             const button = document.createElement("button");
+             button.innerText = element;
+             button.className = "word-button";
+             button.id = `word-button-${index}`;
+             button.onclick = () => toggleActive(button, element);
+             container.appendChild(button);
+         }
+     });
+ }
 
-function toggleActive(button, element) {
-    if (button.classList.contains("active")) {
-        button.classList.remove("active");
-        activeButtons.delete(element);
-    } else {
-        button.classList.add("active");
-        activeButtons.add(element);
-    }
-    updateActiveWords();
-}
+ function toggleActive(button, element) {
+     if (button.classList.contains("active")) {
+         button.classList.remove("active");
+         activeButtons.delete(element);
+     } else {
+         button.classList.add("active");
+         activeButtons.add(element);
+     }
+     updateActiveWords();
+ }
 
-function updateActiveWords() {
-    document.getElementById("activeWords").innerText = Array.from(activeButtons).join(", ");
-}
+ function updateActiveWords() {
+     //document.getElementById("activeWords").innerText = Array.from(activeButtons).join(", ");
+     document.getElementById("prompt").value = Array.from(activeButtons).join(", ");
+ }

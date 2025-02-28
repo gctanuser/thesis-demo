@@ -60,7 +60,7 @@ async function getResponse() {
 
 // question generation functions
 
-async function sendStory(inputValue,purpose) {
+async function sendStory(prompt,context,purpose) {
     let serverURL_final = serverURL + "process";
     console.log("Sent Data to:"+ serverURL_final)
 
@@ -83,7 +83,7 @@ async function sendStory(inputValue,purpose) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ task:purpose, input: inputValue, choices: choice_str, model: model_choice}),
+            body: JSON.stringify({ task:purpose, input: prompt, context_clue: context, model: model_choice}),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {
@@ -94,14 +94,15 @@ async function sendStory(inputValue,purpose) {
 
 async function createQuestions(){
     const responseDiv = document.getElementById("response");
-    const promptdata = document.getElementById("prompt").value;
+    const contextData = document.getElementById("prompt").value;
+    const promptdata = document.getElementById('inputString').value;
 
     responseDiv.innerHTML = "Processing request...";
-    
+    console.log(promptdata);
     let purpose = "generation";
     try{
 
-        let x = await sendStory(promptdata,purpose);
+        let x = await sendStory(promptdata,contextData,purpose);
         responseDiv.innerHTML = x.response;
 
     } catch(error){
@@ -216,5 +217,6 @@ let activeButtons = new Set();
  }
 
  function updateActiveWords() {
-     document.getElementById("activeWords").innerText = Array.from(activeButtons).join(", ");
+     //document.getElementById("activeWords").innerText = Array.from(activeButtons).join(", ");
+     document.getElementById("prompt").value = Array.from(activeButtons).join(", ");
  }
