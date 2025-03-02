@@ -60,7 +60,7 @@ async function getResponse() {
 
 // question generation functions
 
-async function sendStory(prompt,context,purpose) {
+async function sendStory(prompt,context,purpose,grade) {
     let serverURL_final = serverURL + "process";
     console.log("Sent Data to:"+ serverURL_final)
 
@@ -83,7 +83,7 @@ async function sendStory(prompt,context,purpose) {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ task:purpose, input: prompt, context_clue: context, model: model_choice}),
+            body: JSON.stringify({ task:purpose, input: prompt, context_clue: context, model: model_choice, grade_level: grade}),
         });
         return await response.json(); // Return parsed JSON response
     } catch (error) {
@@ -93,6 +93,7 @@ async function sendStory(prompt,context,purpose) {
 }
 
 async function createQuestions(){
+    const grade_level = document.getElementById("grade_level_select").value;
     const responseDiv = document.getElementById("response");
     const contextData = document.getElementById("prompt").value;
     const promptdata = document.getElementById('inputString').value;
@@ -102,7 +103,7 @@ async function createQuestions(){
     let purpose = "generation";
     try{
 
-        let x = await sendStory(promptdata,contextData,purpose);
+        let x = await sendStory(promptdata,contextData,purpose,grade_level);
         responseDiv.innerHTML = x.response;
 
     } catch(error){
